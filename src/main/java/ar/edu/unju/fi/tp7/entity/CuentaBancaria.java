@@ -1,12 +1,16 @@
 package ar.edu.unju.fi.tp7.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -28,6 +32,9 @@ public class CuentaBancaria {
 	@Column
 	private boolean estado;
 	
+	@OneToMany(mappedBy = "cuentaBancaria", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Movimiento> movimientos;
+	
 	private static Double LIMITE=5000d;
 	
 	public CuentaBancaria() {
@@ -41,8 +48,23 @@ public class CuentaBancaria {
 		this.fechaIngreso = fechaIngreso;
 		this.saldoActual = saldoActual;
 		this.estado = estado;
+		movimientos = new ArrayList<Movimiento>();
 	}
 
+	public Movimiento extraer(Double saldo) {
+		if(saldo<=LIMITE) {
+			this.saldoActual=saldoActual-saldo;
+			return new Movimiento(LocalDate.now(), null, "Extraccion", saldo);
+			
+		}
+		return null;
+	}
+	
+	public Movimiento ingresar(Double saldo) {
+		this.saldoActual=saldoActual+saldo;
+		return new Movimiento(LocalDate.now(), null, "Extraccion", saldo);
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -93,6 +115,14 @@ public class CuentaBancaria {
 
 	public static Double getLIMITE() {
 		return LIMITE;
+	}
+
+	public List<Movimiento> getMovimientos() {
+		return movimientos;
+	}
+
+	public void setMovimientos(List<Movimiento> movimientos) {
+		this.movimientos = movimientos;
 	}
 	
 }

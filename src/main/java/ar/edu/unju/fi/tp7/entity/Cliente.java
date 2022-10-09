@@ -31,7 +31,7 @@ public class Cliente {
 	private boolean estado=true;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Cliente> adherentes;
+	private List<Cliente> adherentes = null;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "id_cuenta")

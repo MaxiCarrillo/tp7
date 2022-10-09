@@ -1,7 +1,6 @@
 package ar.edu.unju.fi.tp7;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,8 +15,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ar.edu.unju.fi.tp7.entity.Cliente;
 import ar.edu.unju.fi.tp7.entity.CuentaBancaria;
+import ar.edu.unju.fi.tp7.entity.Movimiento;
 import ar.edu.unju.fi.tp7.repository.ClienteRepository;
 import ar.edu.unju.fi.tp7.repository.CuentaBancariaRepository;
+import ar.edu.unju.fi.tp7.repository.MovientoRepository;
 
 @DisplayName("TP7 - Pruebas Unitarias")
 @SpringBootTest
@@ -28,6 +29,9 @@ class Tp7ApplicationTests {
 	
 	@Autowired
 	CuentaBancariaRepository cuentaBancariaRepository;
+	
+	@Autowired
+	MovientoRepository movimientoRepository;
 	
 	Cliente cliente = new Cliente("41265681", "Sofia Yañez", "sofi@gmail.com", "Tenerife 582", null);
 	CuentaBancaria cuentaBancaria = new CuentaBancaria(1, LocalDate.now(), 80000d, true);
@@ -107,5 +111,18 @@ class Tp7ApplicationTests {
 		
 		assertEquals(clienteRepository.count(), 2);
 		assertEquals(cuentaBancariaRepository.count(), 2);
+	}
+	
+	@DisplayName("Extraer")
+	@Test
+	void extraer() {
+		CuentaBancaria cuentaBancaria = cuentaBancariaRepository.findByNumeroCuenta(2);
+		
+		Movimiento movimiento = cuentaBancaria.extraer(5000d);
+		movimiento.setCuentaBancaria(cuentaBancaria);
+		cuentaBancariaRepository.save(cuentaBancaria);
+		
+		assertEquals(movimientoRepository.count(), 1);
+		assertEquals(cuentaBancariaRepository.findByNumeroCuenta(2).getSaldoActual(),75000d);
 	}
 }
