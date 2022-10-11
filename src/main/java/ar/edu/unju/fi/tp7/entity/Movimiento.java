@@ -2,7 +2,6 @@ package ar.edu.unju.fi.tp7.entity;
 
 import java.time.LocalDate;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,7 +20,7 @@ public class Movimiento {
 	@Column
 	private LocalDate fechaMovimiento;
 	
-	@ManyToOne(cascade = CascadeType.PERSIST)
+	@ManyToOne()
 	@JoinColumn(name = "id_cuenta")
 	private CuentaBancaria cuentaBancaria;
 	
@@ -31,8 +30,12 @@ public class Movimiento {
 	@Column
 	private Double importe;
 
+	public Movimiento() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public Movimiento(LocalDate fechaMovimiento, CuentaBancaria cuentaBancaria, String tipo, Double importe) {
-		super();
+//		super();
 		this.fechaMovimiento = fechaMovimiento;
 		this.cuentaBancaria = cuentaBancaria;
 		this.tipo = tipo;

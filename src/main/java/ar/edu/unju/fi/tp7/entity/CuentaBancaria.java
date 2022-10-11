@@ -35,7 +35,7 @@ public class CuentaBancaria {
 	@OneToMany(mappedBy = "cuentaBancaria", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Movimiento> movimientos;
 	
-	private static Double LIMITE=5000d;
+	private static Double LIMITE=10000d;
 	
 	public CuentaBancaria() {
 		// TODO Auto-generated constructor stub
@@ -60,9 +60,8 @@ public class CuentaBancaria {
 		return null;
 	}
 	
-	public Movimiento ingresar(Double saldo) {
+	public void ingresar(Double saldo) {
 		this.saldoActual=saldoActual+saldo;
-		return new Movimiento(LocalDate.now(), null, "Extraccion", saldo);
 	}
 	
 	public Long getId() {

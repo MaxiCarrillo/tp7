@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,13 +54,17 @@ class Tp7ApplicationTests {
 		cuentaBancariaRepository.save(cuentaBancaria);
 	}
 	
+	
 	@AfterEach
 	void setDown() {
-		clienteRepository.delete(cliente);
+		clienteRepository.deleteAll();
+		movimientoRepository.deleteAll();
+		cuentaBancariaRepository.deleteAll();
 	}
 	
 	@DisplayName("CRUD - Create")
 	@Test
+	@Disabled
 	void cargar() {
 		assertEquals(clienteRepository.count(), 2);
 		assertEquals(cuentaBancariaRepository.count(), 2);
@@ -68,6 +73,7 @@ class Tp7ApplicationTests {
 	
 	@DisplayName("CRUD - Read")
 	@Test
+	@Disabled
 	void leer() {
 		assertEquals(clienteRepository.findByDni("41265681").getDni(), "41265681");
 		assertEquals(clienteRepository.findByDni("43634761").getDni(), "43634761");
@@ -76,6 +82,7 @@ class Tp7ApplicationTests {
 	
 	@DisplayName("CRUD - Update")
 	@Test
+	@Disabled
 	void actualizar() {
 		Cliente cliente = clienteRepository.findByDni("43634761");
 		cliente.setDomicilio("Tenerife 582");
@@ -95,6 +102,7 @@ class Tp7ApplicationTests {
 
 	@DisplayName("CRUD - Delete")
 	@Test
+	@Disabled
 	void borrar() {
 		assertEquals(clienteRepository.count(), 2);
 		
@@ -115,14 +123,38 @@ class Tp7ApplicationTests {
 	
 	@DisplayName("Extraer")
 	@Test
-	void extraer() {
+	@Disabled
+	void extraerSaldo() {
 		CuentaBancaria cuentaBancaria = cuentaBancariaRepository.findByNumeroCuenta(2);
 		
 		Movimiento movimiento = cuentaBancaria.extraer(5000d);
 		movimiento.setCuentaBancaria(cuentaBancaria);
 		cuentaBancariaRepository.save(cuentaBancaria);
+		movimientoRepository.save(movimiento);
 		
 		assertEquals(movimientoRepository.count(), 1);
 		assertEquals(cuentaBancariaRepository.findByNumeroCuenta(2).getSaldoActual(),75000d);
+		
+	}
+	
+	@DisplayName("Ingresar")
+	@Test
+	void ingresarSaldo() {
+		CuentaBancaria cuentaBancaria = cuentaBancariaRepository.findByNumeroCuenta(1);
+		cuentaBancaria.ingresar(5000d);
+		Movimiento movimiento = new Movimiento(LocalDate.now(), cuentaBancaria, "Ingreso", 5000d);
+		cuentaBancariaRepository.save(cuentaBancaria);
+		movimientoRepository.save(movimiento);
+		
+		assertEquals(movimientoRepository.count(), 1);
+		assertEquals(cuentaBancariaRepository.findByNumeroCuenta(1).getSaldoActual(),85000d);
+		
+		cuentaBancaria.ingresar(10000d);
+		movimiento = new Movimiento(LocalDate.now(), cuentaBancaria, "Ingreso", 10000d);
+		cuentaBancariaRepository.save(cuentaBancaria);
+		movimientoRepository.save(movimiento);
+		
+		assertEquals(movimientoRepository.count(), 2);
+		assertEquals(cuentaBancariaRepository.findByNumeroCuenta(1).getSaldoActual(),95000d);
 	}
 }
